@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import sqlite3
 
 app = Flask(__name__)
@@ -29,14 +29,18 @@ def health_check():
 
 @app.post("/api/register")
 def register():
-    data = request.get_json() #retieve JSON data from user
+    data = request.get_json() #retieve the data from the user
     print(data)
     user = data.get("name")
     email = data.get("email")
+    password = data.get("password")
+
+    if not user or not email or not password:
+        return jsonify({"error": "Name, email, and password are required."}), 400
 
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO users (name, email) VALUES (?, ?)", (user, email))
+    cursor.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", (user, email, password))
     conn.commit()
     conn.close()
 
