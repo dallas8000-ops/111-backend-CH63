@@ -1,8 +1,11 @@
 from flask import Flask, jsonify, request
 import sqlite3
+import os
 
 app = Flask(__name__)
 DB_NAME = "budget_manager.db"
+
+print("Using database at:", os.path.abspath(DB_NAME))
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -53,10 +56,10 @@ def register():
 @app.get("/api/users")
 def get_users():
     conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = sqlite3.Row #Allow colums to be retrieved by name
     cursor = conn.cursor()
     cursor.execute("SELECT id, name, email, password FROM users")
-    rows = cursor.fetchall()
+    rows = cursor.fetchall() #list of user
     conn.close()
     users = []
     for row in rows:
@@ -68,7 +71,7 @@ def get_users():
         "data": users
     }), 200
 
-# URL: http://127.0.0.1:5000/api/users/<user_id>
+# URL: http://127.0.0.1:5000/api/users/2
 @app.get("/api/users/<int:user_id>")
 def get_user_by_id(user_id):
     conn = sqlite3.connect(DB_NAME)
@@ -144,30 +147,143 @@ def add_expense():
     """, (title, description, amount, date, category, user_id))
     conn.commit()
     conn.close()
-    return jsonify({"message": "Expense added successfully"}), 201
 
-# Add 5 sample expenses (force clear and insert)
-def seed_expenses():
+    return jsonify({
+        "success": True,
+        "message": "Expense added successfully"
+    }), 201
+
+# URL: http://127.0.0.1:5000/api/expenses
+@app.get("/api/expenses")
+def get_expenses():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, title, description, amount, date, category, user_id FROM expenses")
+    rows = cursor.fetchall()
+    conn.close()
+    expenses = []
+    for row in rows:
+        expense = {
+            "id": row["id"],
+            "title": row["title"],
+            "description": row["description"],
+            "amount": row["amount"],
+            "date": row["date"],
+            "category": row["category"],
+            "user_id": row["user_id"]
+        }
+        expenses.append(expense)
+    return jsonify({
+        "success": True,
+        "message": "Expenses retrieved successfully",
+        "data": expenses
+    }), 200
+
+# URL: http://127.0.0.1:5000/api/expenses/list
+@app.get("/api/expenses/list")
+def get_expenses_summary():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, title, category, user_id FROM expenses")
+    rows = cursor.fetchall()
+    conn.close()
+    expenses = []
+    for row in rows:
+        expense = {
+            "id": row["id"],
+            "title": row["title"],
+            "category": row["category"],
+            "user_id": row["user_id"]
+        }
+        expenses.append(expense)
+    return jsonify({
+        "success": True,
+        "message": "Expenses summary retrieved successfully",
+        "data": expenses
+    }), 200
+
+# URL: http://127.0.0.1:5000/api/expenses/<expense_id>
+@app.get("/api/expenses/<int:expense_id>")
+def get_expense_by_id(expense_id):
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM expenses WHERE id = ?", (expense_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row:
+        return jsonify({
+            "success": False,
+            "message": "Expense not found"
+        }), 404
+
+    return jsonify({
+        "success": True,
+        "message": "Expense retrieved successfully",
+        "data": dict(row)
+    }), 200
+
+# URL:http://127.0.0.1:5000/apis/<expense_id>
+@app.delete("/api/expenses/<int:expense_id>")
+def delete_expense(expense_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM expenses")
-    sample_expenses = [
-        ("Groceries", "Weekly grocery shopping", 75.50, "2026-02-01", "Food", 1),
-        ("Bus Pass", "Monthly bus pass", 40.00, "2026-02-01", "Transport", 1),
-        ("Internet", "Monthly internet bill", 60.00, "2026-02-01", "Utilities", 2),
-        ("Coffee", "Coffee with friends", 12.00, "2026-02-02", "Food", 3),
-        ("Book", "Bought a programming book", 30.00, "2026-02-02", "Education", 2)
-    ]
-    cursor.executemany(
-        "INSERT INTO expenses (title, description, amount, date, category, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-        sample_expenses
-    )
+    cursor.execute("SELECT id FROM expenses WHERE id = ?", (expense_id,))
+    if not cursor.fetchone():
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "Expense not found"
+        }), 404
+    cursor.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
     conn.commit()
     conn.close()
+    return jsonify({
+        "success": True,
+        "message": "Expense deleted successfully"
+    }), 200
 
-# Call seed_expenses after init_db
+# URL: http://127.0.0.1:5000/api/expenses/<expense_id>
+@app.put("/api/expenses/<int:expense_id>")
+def update_expense(expense_id):
+    data = request.get_json()
+    title = data.get("title")
+    description = data.get("description")
+    amount = data.get("amount")
+    date = data.get("date")
+    category = data.get("category")
+    user_id = data.get("user_id")
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor
+        
+    cursor.execute("SELECT id FROM expenses WHERE id = ?", (expense_id,))
+    if not cursor.fetchone():
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "Expense not found"
+        }), 404
+    cursor.execute("""
+        UPDATE expenses SET title = ?, description = ?, amount = ?, date = ?, category = ?, user_id = ?
+        WHERE id = ?
+    """, (title, description, amount, date, category, user_id, expense_id))
+    conn.commit()
+
+   
+
+
+    conn.close()
+    return jsonify({
+        "success": True,
+        "message": "Expense updated successfully"
+    }), 200
+
+
+
 if __name__ == "__main__":
     init_db()
-    seed_expenses()
     app.run(debug=True)
 
