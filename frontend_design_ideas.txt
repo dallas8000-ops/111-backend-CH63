@@ -1,0 +1,102 @@
+Frontend Design Ideas for 111-backend Project
+================================================
+
+Overview
+--------
+This document provides design ideas and layout suggestions for the required HTML templates and frontend features for your project. The frontend will consume the 111-backend API for user login and displaying user-specific expenses. The design should be unique, visually appealing, and user-friendly.
+
+Required HTML Templates
+-----------------------
+1. **base.html**
+   - Contains the main layout, navigation bar, and footer.
+   - Includes links to CSS for custom styling (colors, fonts, layout).
+   - Uses template blocks for content injection (e.g., `{% block content %}`).
+
+2. **home.html**
+   - Welcomes the user.
+   - Shows a summary of the app's purpose.
+   - If logged in, displays a quick overview of expenses.
+
+3. **about.html**
+   - Describes the project, its goals, and technologies used.
+   - Can include team info or a project timeline.
+
+4. **contact.html**
+   - Provides a contact form (name, email, message).
+   - Includes social media or support links.
+
+5. **login.html**
+   - Contains a login form (username/email, password).
+   - Handles authentication via the backend API.
+   - Shows error messages for failed logins.
+
+API Integration
+---------------
+- Use JavaScript (fetch/AJAX) to call the backend API for login and fetching expenses.
+- Store authentication tokens (if any) securely (e.g., in cookies or localStorage).
+- Display expenses dynamically for the logged-in user.
+
+Styling & Design Suggestions
+---------------------------
+- **Color Palette:** Choose 2-3 main colors (e.g., blue, teal, white) for a modern look.
+- **Typography:** Use Google Fonts for clean, readable text (e.g., 'Roboto', 'Montserrat').
+- **Layout:** Responsive design with flexbox or CSS grid. Centered forms, card-style expense lists.
+- **Navigation:** Fixed or sticky navbar with clear links to Home, About, Contact, Login/Logout.
+- **Buttons:** Rounded corners, hover effects, consistent color usage.
+- **Cards:** Use cards to display expenses, with icons or category tags.
+- **Feedback:** Show loading spinners, error messages, and success notifications.
+
+Sample Layout Sketches
+----------------------
+
+1. **base.html**
+   [Logo]  Home | About | Contact | Login/Logout
+   ---------------------------------------------
+   |                                           |
+   |           {% block content %}             |
+   |                                           |
+   ---------------------------------------------
+   [Footer]
+
+2. **login.html**
+   +-----------------------------+
+   |        Login to Account     |
+   |  [Username/email]           |
+   |  [Password]                 |
+   |  [Login Button]             |
+   |  [Error message]            |
+   +-----------------------------+
+
+3. **home.html** (Logged in)
+   Welcome, [User]!
+   Your Expenses:
+   +-------------------+
+   | [Expense Card 1]  |
+   | [Expense Card 2]  |
+   | ...               |
+   +-------------------+
+
+4. **about.html**
+   - Project description
+   - Technologies used
+   - Team info
+
+5. **contact.html**
+   +-----------------------------+
+   |  Contact Us                 |
+   |  [Name]                     |
+   |  [Email]                    |
+   |  [Message]                  |
+   |  [Send Button]              |
+   +-----------------------------+
+
+Additional Features
+-------------------
+- Dark mode toggle
+- Mobile-friendly navigation
+- Expense filtering/search
+- User profile dropdown
+
+---
+
+This document can be used as a reference for designing and implementing your frontend templates. For a more visual guide, consider creating wireframes using tools like Figma or Adobe XD.

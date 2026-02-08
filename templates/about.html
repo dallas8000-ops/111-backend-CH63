@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+About Me
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            {% if session.get('username') == 'Barney' %}
+                 <img src="{{ url_for('static', filename='barney.jpg') }}" alt="Barney's Profile" class="rounded-circle shadow-lg mb-3" style="width:140px;height:140px;border:4px solid #2a3d66;">
+                 <h1 style="font-family:'Montserrat',sans-serif;font-weight:700;color:#f7c873;letter-spacing:2px;">Barney</h1>
+                 <p style="font-size:1.2rem;color:#555;">Hello I am Barney</p>
+                 <p style="font-size:1.2rem;color:#555;">Hobbies: Horseback riding, Computer Gaming, Hunting, Fishing, and helping others when I can</p>
+            {% elif session.get('username') == 'Cayden' %}
+                <img src="{{ url_for('static', filename='cayden.jpg') }}" alt="Cayden's Profile" class="rounded-circle shadow-lg mb-3" style="width:140px;height:140px;border:4px solid #2a3d66;">
+                <h1 style="font-family:'Montserrat',sans-serif;font-weight:700;color:#f7c873;letter-spacing:2px;">Cayden</h1>
+                <p style="font-size:1.2rem;color:#555;">Hobbies: Soccer, Gaming, Drawing</p>
+            {% elif session.get('username') == 'Charlie' %}
+                <img src="{{ url_for('static', filename='charlie.jpg') }}" alt="Charlie's Profile" class="rounded-circle shadow-lg mb-3" style="width:140px;height:140px;border:4px solid #2a3d66;">
+                <h1 style="font-family:'Montserrat',sans-serif;font-weight:700;color:#f7c873;letter-spacing:2px;">Charlie</h1>
+                <p style="font-size:1.2rem;color:#555;">Hobbies: Basketball, Music, Hiking</p>
+            {% elif session.get('username') == 'Kolton' %}
+                <img src="{{ url_for('static', filename='kolton.jpg') }}" alt="Kolton's Profile" class="rounded-circle shadow-lg mb-3" style="width:140px;height:140px;border:4px solid #2a3d66;">
+                <h1 style="font-family:'Montserrat',sans-serif;font-weight:700;color:#f7c873;letter-spacing:2px;">Kolton</h1>
+                <p style="font-size:1.2rem;color:#555;">Hobbies: Skateboarding, Photography, Cooking</p>
+            {% else %}
+                <h1 style="font-family:'Montserrat',sans-serif;font-weight:700;color:#2a3d66;letter-spacing:2px;">About This App</h1>
+                <p style="font-size:1.2rem;color:#555;">Personalized expense tracking for every user. Log in to see your profile and hobbies!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
